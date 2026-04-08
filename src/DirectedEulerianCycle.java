@@ -45,7 +45,7 @@ public class DirectedEulerianCycle {
      *
      * @param digraph the digraph
      */
-    public DirectedEulerianCycle(Digraph digraph) {
+    public DirectedEulerianCycle(EdgeWeightedDigraph digraph) {
 
         // must have at least one edge
         if (digraph.E() == 0) return;
@@ -57,7 +57,7 @@ public class DirectedEulerianCycle {
                 return;
 
         // create local view of adjacency lists, to iterate one vertex at a time
-        Iterator<Integer>[] adj = (Iterator<Integer>[]) new Iterator[digraph.V()];
+        Iterator<DirectedEdge>[] adj = (Iterator<DirectedEdge>[]) new Iterator[digraph.V()];
         for (int v = 0; v < digraph.V(); v++)
             adj[v] = digraph.adj(v).iterator();
 
@@ -72,7 +72,8 @@ public class DirectedEulerianCycle {
             int v = stack.pop();
             while (adj[v].hasNext()) {
                 stack.push(v);
-                v = adj[v].next();
+                DirectedEdge e = adj[v].next();
+                v = e.to();
             }
             // add vertex with no more leaving edges to cycle
             cycle.push(v);
@@ -107,7 +108,7 @@ public class DirectedEulerianCycle {
     }
 
     // returns any non-isolated vertex; -1 if no such vertex
-    private static int nonIsolatedVertex(Digraph digraph) {
+    private static int nonIsolatedVertex(EdgeWeightedDigraph digraph) {
         for (int v = 0; v < digraph.V(); v++)
             if (digraph.outdegree(v) > 0)
                 return v;
@@ -127,7 +128,7 @@ public class DirectedEulerianCycle {
     //    - indegree(v) = outdegree(v) for every vertex
     //    - the graph is connected, when viewed as an undirected graph
     //      (ignoring isolated vertices)
-    private static boolean satisfiesNecessaryAndSufficientConditions(Digraph digraph) {
+    private static boolean satisfiesNecessaryAndSufficientConditions(EdgeWeightedDigraph digraph) {
 
         // Condition 0: at least 1 edge
         if (digraph.E() == 0) return false;
@@ -139,9 +140,12 @@ public class DirectedEulerianCycle {
 
         // Condition 2: graph is connected, ignoring isolated vertices
         Graph H = new Graph(digraph.V());
-        for (int v = 0; v < digraph.V(); v++)
-            for (int w : digraph.adj(v))
+        for (int v = 0; v < digraph.V(); v++){
+            for (DirectedEdge e : digraph.adj(v)){
+                int w = e.to();
                 H.addEdge(v, w);
+            }
+        }
 
         // check that all non-isolated vertices are connected
         int s = nonIsolatedVertex(digraph);
@@ -154,7 +158,7 @@ public class DirectedEulerianCycle {
     }
 
     // check that solution is correct
-    private boolean certifySolution(Digraph digraph) {
+    private boolean certifySolution(EdgeWeightedDigraph digraph) {
 
         // internal consistency check
         if (hasEulerianCycle() == (cycle() == null)) return false;
@@ -175,7 +179,7 @@ public class DirectedEulerianCycle {
     }
 
 
-    private static void unitTest(Digraph digraph, String description) {
+    private static void unitTest(EdgeWeightedDigraph digraph, String description) {
         StdOut.println(description);
         StdOut.println("-------------------------------------");
         StdOut.print(digraph);
@@ -206,19 +210,19 @@ public class DirectedEulerianCycle {
         int E = Integer.parseInt(args[1]);
 
         // Eulerian cycle
-        Digraph digraph1 = DigraphGenerator.eulerianCycle(V, E);
+        EdgeWeightedDigraph digraph1 = DigraphGenerator.eulerianCycle(V, E);
         unitTest(digraph1, "Eulerian cycle");
 
         // Eulerian path
-        Digraph digraph2 = DigraphGenerator.eulerianPath(V, E);
+        EdgeWeightedDigraph digraph2 = DigraphGenerator.eulerianPath(V, E);
         unitTest(digraph2, "Eulerian path");
 
         // empty digraph
-        Digraph digraph3 = new Digraph(V);
+        EdgeWeightedDigraph digraph3 = new Digraph(V);
         unitTest(digraph3, "empty digraph");
 
         // self loop
-        Digraph digraph4 = new Digraph(V);
+        EdgeWeightedDigraph digraph4 = new Digraph(V);
         int v4 = StdRandom.uniformInt(V);
         digraph4.addEdge(v4, v4);
         unitTest(digraph4, "single self loop");
