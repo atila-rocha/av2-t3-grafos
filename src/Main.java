@@ -3,7 +3,7 @@ public class Main {
     public static void main(String[] args) {
         // 1. LER O ARQUIVO
         // Certifique-se de que o caminho do arquivo está correto no seu projeto
-        String caminhoArquivo = "dados/entrada_eulerizada";
+        String caminhoArquivo = "dados/entrada_eulerizada.txt";
         In in = new In(caminhoArquivo);
 
         // 2. CONSTRUIR O DÍGRAFO PONDERADO
