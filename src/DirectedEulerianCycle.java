@@ -205,6 +205,7 @@ public class DirectedEulerianCycle {
      *
      * @param args the command-line arguments
      */
+    /*
     public static void main(String[] args) {
         int V = Integer.parseInt(args[0]);
         int E = Integer.parseInt(args[1]);
@@ -250,7 +251,7 @@ public class DirectedEulerianCycle {
         // 4-vertex digraph
         Digraph digraph7 = new Digraph(new In("eulerianD.txt"));
         unitTest(digraph7, "4-vertex Eulerian digraph");
-    }
+    }*/
 
 }
 
