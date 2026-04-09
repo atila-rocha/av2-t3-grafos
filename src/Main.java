@@ -1,59 +1,70 @@
-import java.io.File;
-import java.util.Scanner;
-
 public class Main {
+
     public static void main(String[] args) {
-        String path = "dados/suposta_entrada_eulerizada";
+        // 1. LER O ARQUIVO
+        // Certifique-se de que o caminho do arquivo está correto no seu projeto
+        String caminhoArquivo = "dados/suposta_entrada_eulerizada";
+        In in = new In(caminhoArquivo);
 
-        try {
-            Scanner sc = new Scanner(new File(path));
-            int V = sc.nextInt();
-            int E = sc.nextInt();
+        // 2. CONSTRUIR O DÍGRAFO PONDERADO
+        EdgeWeightedDigraph digraph = new EdgeWeightedDigraph(in);
 
-            EdgeWeightedDigraph G = new EdgeWeightedDigraph(V);
+        System.out.println("=========================================");
+        System.out.println("   PROBLEMA DO CARTEIRO CHINÊS");
+        System.out.println("=========================================\n");
 
-            for (int i = 0; i < E; i++) {
-                int v = sc.nextInt();
-                int w = sc.nextInt();
-                double weight = sc.nextDouble();
-                G.addEdge(new DirectedEdge(v, w, weight));
+        System.out.println("Grafo carregado com sucesso!");
+        System.out.println("Total de Vértices: " + digraph.V());
+        System.out.println("Total de Arestas: " + digraph.E() + "\n");
+
+        // 3. COMPROVAR O BALANCEAMENTO
+        System.out.println("--- Verificação de Balanceamento ---");
+        boolean balanceado = true;
+        for (int v = 0; v < digraph.V(); v++) {
+            int grauEntrada = digraph.indegree(v);
+            int grauSaida = digraph.outdegree(v);
+
+            System.out.printf("Vértice %d -> Entrada: %d | Saída: %d\n", v, grauEntrada, grauSaida);
+
+            if (grauEntrada != grauSaida) {
+                balanceado = false;
             }
-
-            System.out.println("=== Verificação de Graus ===");
-            boolean balanceado = true;
-            for (int v = 0; v < G.V(); v++) {
-                char letra = (char) ('a' + v);
-                System.out.printf("Vértice %c: Entrada=%d, Saída=%d\n",
-                        letra, G.indegree(v), G.outdegree(v));
-
-                if (G.indegree(v) != G.outdegree(v)) balanceado = false;
-            }
-
-            if (balanceado) {
-                System.out.println("\nO grafo está balanceado! Existe circuito euleriano.");
-
-                DirectedEulerianCycle euler = new DirectedEulerianCycle(G);
-
-                if (euler.hasEulerianCycle()) {
-                    System.out.print("Circuito Euleriano: ");
-                    // Transforma os números salvos no ciclo de volta em letras
-                    for (int v : euler.cycle()) {
-                        char verticeLetra = (char) ('a' + v);
-                        System.out.print(verticeLetra + " ");
-                    }
-                    System.out.println();
-                    System.out.println("Custo Total do Circuito: " + euler.totalWeight());
-                } else {
-                    System.out.println("Erro interno: Ciclo não pôde ser formado.");
-                }
-
-            } else {
-                System.out.println("\nO grafo NÃO está balanceado.");
-            }
-
-            sc.close();
-        } catch (Exception e) {
-            System.out.println("Erro ao executar: " + e.getMessage());
         }
+
+        if (!balanceado) {
+            System.out.println("\n[ERRO] O grafo não está balanceado! O carteiro vai ficar preso em alguma rua.");
+            return; // Encerra o programa
+        }
+        System.out.println("[OK] O grafo está perfeitamente balanceado!\n");
+
+        // 4. EXECUTAR O ALGORITMO (Método de Hierholzer)
+        DirectedEulerianCycle euler = new DirectedEulerianCycle(digraph);
+
+        // 5. IMPRIMIR A ROTA E CALCULAR O CUSTO
+        System.out.println("--- Resultado do Trajeto ---");
+        if (euler.hasEulerianCycle()) {
+            System.out.print("Rota do Carteiro: ");
+
+            // Imprime a sequência de vértices
+            for (int v : euler.cycle()) {
+                System.out.print(v + " ");
+            }
+            System.out.println("\n");
+
+            // 6. CALCULAR O CUSTO TOTAL
+            // Como é um circuito euleriano, TODAS as arestas são percorridas exatamente uma vez.
+            // Portanto, o custo total é simplesmente a soma de todas as arestas do grafo!
+            double custoTotal = 0.0;
+            for (DirectedEdge e : digraph.edges()) {
+                custoTotal += e.weight();
+            }
+
+            System.out.printf("Custo Total do Percurso: %.2f\n", custoTotal);
+
+        } else {
+            System.out.println("Não foi possível encontrar um circuito euleriano.");
+        }
+
+        System.out.println("=========================================");
     }
 }
