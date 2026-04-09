@@ -2,7 +2,6 @@ public class Main {
 
     public static void main(String[] args) {
         // 1. LER O ARQUIVO
-        // Certifique-se de que o caminho do arquivo está correto no seu projeto
         String caminhoArquivo = "dados/entrada_eulerizada";
         In in = new In(caminhoArquivo);
 
