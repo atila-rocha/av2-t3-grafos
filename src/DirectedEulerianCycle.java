@@ -174,6 +174,32 @@ public class DirectedEulerianCycle {
 
         // check that cycle() is a directed cycle of G
         // TODO
+        Iterator<Integer> it = cycle.iterator();
+        int first = it.next();
+        int v = first;
+
+        while (it.hasNext()) {
+            int w = it.next();
+            boolean edgeExists = false;
+
+            // Verifica se existe uma aresta de 'v' para 'w' no grafo
+            for (DirectedEdge e : digraph.adj(v)) {
+                if (e.to() == w) {
+                    edgeExists = true;
+                    break;
+                }
+            }
+
+            // Se não houver aresta ligando os vértices consecutivos, não é um ciclo válido
+            if (!edgeExists) return false;
+
+            v = w; // Avança para o próximo vértice
+        }
+
+        // Verifica se o ciclo começa e termina no mesmo vértice
+        if (v != first) return false;
+
+
 
         return true;
     }

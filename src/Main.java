@@ -3,7 +3,7 @@ public class Main {
     public static void main(String[] args) {
         // 1. LER O ARQUIVO
         // Certifique-se de que o caminho do arquivo está correto no seu projeto
-        String caminhoArquivo = "dados/suposta_entrada_eulerizada";
+        String caminhoArquivo = "dados/entrada_eulerizada";
         In in = new In(caminhoArquivo);
 
         // 2. CONSTRUIR O DÍGRAFO PONDERADO
@@ -36,6 +36,9 @@ public class Main {
             return; // Encerra o programa
         }
         System.out.println("[OK] O grafo está perfeitamente balanceado!\n");
+
+        System.out.println("REPRESENTAÇÃO DO DÍGRAFO PONDERADO BALANCEADO");
+        System.out.println(digraph.toDot());
 
         // 4. EXECUTAR O ALGORITMO (Método de Hierholzer)
         DirectedEulerianCycle euler = new DirectedEulerianCycle(digraph);
